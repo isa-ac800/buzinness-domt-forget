@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="rw">
+<head>
+  <meta charset="UTF-8">
+  <title>Gestion y'Ibicuruzwa</title>
+  <style>
+    body {
+      background-color: #000;
+      color: white;
+      font-family: Arial, sans-serif;
+      padding: 30px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #00ffcc;
+    }
+
+    .language-select {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    select {
+      padding: 5px;
+      margin-bottom: 20px;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    label, input {
+      display: block;
+      width: 100%;
+    }
+
+    input {
+      padding: 8px;
+      margin-top: 5px;
+      border-radius: 5px;
+      border: none;
+    }
+
+    .button-group button {
+      background-color: #00cc99;
+      color: black;
+      padding: 10px 20px;
+      margin: 5px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .button-group button:hover {
+      background-color: #00aa77;
+    }
+
+    #produitForm, #listeProduits {
+      display: none;
+      margin-top: 20px;
+    }
+
+    .produit-item {
+      margin-bottom: 10px;
+      padding: 10px;
+      border: 1px solid #444;
+      border-radius: 5px;
+      background-color: #111;
+    }
+  </style>
+</head>
+<body>
+
+  <h1 id="title">Gestion y'Ibicuruzwa</h1>
+
+  <div class="language-select">
+    <label for="langue">Language / Langue / Ururimi / Idioma:</label>
+    <select id="langue" onchange="changerLangue()">
+      <option value="rw">Ikirundi</option>
+      <option value="fr">Français</option>
+      <option value="en">English</option>
+      <option value="es">Español</option>
+    </select>
+  </div>
+
+  <div class="button-group">
+    <button onclick="afficherFormulaire()">
+      Stocker les produits
+    </button>
+    <button onclick="afficherProduits()">
+      Voir les produits que tu as enregistrés
+    </button>
+  </div>
+
+  <div id="produitForm">
+    <div class="form-group">
+      <label id="lblNom">Izina ry'igicuruzwa</label>
+      <input type="text" id="nomProduit" placeholder="Izina">
+    </div>
+
+    <div class="form-group">
+      <label id="lblAchatUnite">Ayo waguze kuri kimwe kimwe</label>
+      <input type="number" id="prixAchatUnite" placeholder="urugero: 500">
+    </div>
+
+    <div class="form-group">
+      <label id="lblAchatTotal">Ayo waguze vyose</label>
+      <input type="number" id="prixAchatTotal" placeholder="urugero: 5000">
+    </div>
+
+    <div class="form-group">
+      <label id="lblVenteUnite">Ayo uzogurisha kuri kimwe kimwe</label>
+      <input type="number" id="prixVenteUnite" placeholder="urugero: 800">
+    </div>
+
+    <div class="form-group">
+      <label id="lblVentePacket">Ayo uzogurisha kuri packet</label>
+      <input type="number" id="prixVentePacket" placeholder="urugero: 9000">
+    </div>
+
+    <button onclick="enregistrerProduit()">SAVE</button>
+  </div>
+
+  <div id="listeProduits"></div>
+
+  <script>
+    function afficherFormulaire() {
+      document.getElementById('produitForm').style.display = 'block';
+      document.getElementById('listeProduits').style.display = 'none';
+    }
+
+    function afficherProduits() {
+      const liste = document.getElementById('listeProduits');
+      const produits = JSON.parse(localStorage.getItem("produits") || "[]");
+
+      if (produits.length === 0) {
+        liste.innerHTML = "<p>Nta produit urabika canke no product saved yet.</p>";
+      } else {
+        liste.innerHTML = produits.map(p => `
+          <div class="produit-item">
+            <strong>${p.nom}</strong><br>
+            Ayo waguze: ${p.achatUnite} / ${p.achatTotal}<br>
+            Ayo uzogurisha: ${p.venteUnite} / ${p.ventePacket}
+          </div>
+        `).join("");
+      }
+
+      document.getElementById('produitForm').style.display = 'none';
+      liste.style.display = 'block';
+    }
+
+    function enregistrerProduit() {
+      const nom = document.getElementById('nomProduit').value;
+      const achatUnite = document.getElementById('prixAchatUnite').value;
+      const achatTotal = document.getElementById('prixAchatTotal').value;
+      const venteUnite = document.getElementById('prixVenteUnite').value;
+      const ventePacket = document.getElementById('prixVentePacket').value;
+
+      const produit = {
+        nom,
+        achatUnite,
+        achatTotal,
+        venteUnite,
+        ventePacket
+      };
+
+      let produits = JSON.parse(localStorage.getItem("produits") || "[]");
+      produits.push(produit);
+      localStorage.setItem("produits", JSON.stringify(produits));
+
+      alert("Produit enregistré !");
+      document.getElementById('produitForm').reset();
+    }
+
+    const traductions = {
+      rw: {
+        title: "Gestion y'Ibicuruzwa",
+        lblNom: "Izina ry'igicuruzwa",
+        lblAchatUnite: "Ayo waguze kuri kimwe kimwe",
+        lblAchatTotal: "Ayo waguze vyose",
+        lblVenteUnite: "Ayo uzogurisha kuri kimwe kimwe",
+        lblVentePacket: "Ayo uzogurisha kuri packet"
+      },
+      fr: {
+        title: "Gestion des Produits",
+        lblNom: "Nom du produit",
+        lblAchatUnite: "Prix d'achat à l'unité",
+        lblAchatTotal: "Prix d'achat total",
+        lblVenteUnite: "Prix de vente à l'unité",
+        lblVentePacket: "Prix de vente par paquet"
+      },
+      en: {
+        title: "Product Management",
+        lblNom: "Product Name",
+        lblAchatUnite: "Purchase Price (Unit)",
+        lblAchatTotal: "Total Purchase Price",
+        lblVenteUnite: "Selling Price (Unit)",
+        lblVentePacket: "Selling Price (Packet)"
+      },
+      es: {
+        title: "Gestión de Productos",
+        lblNom: "Nombre del producto",
+        lblAchatUnite: "Precio de compra por unidad",
+        lblAchatTotal: "Precio total de compra",
+        lblVenteUnite: "Precio de venta por unidad",
+        lblVentePacket: "Precio de venta por paquete"
+      }
+    };
+
+    function changerLangue() {
+      const langue = document.getElementById('langue').value;
+      const tr = traductions[langue];
+      document.getElementById('title').innerText = tr.title;
+      document.getElementById('lblNom').innerText = tr.lblNom;
+      document.getElementById('lblAchatUnite').innerText = tr.lblAchatUnite;
+      document.getElementById('lblAchatTotal').innerText = tr.lblAchatTotal;
+      document.getElementById('lblVenteUnite').innerText = tr.lblVenteUnite;
+      document.getElementById('lblVentePacket').innerText = tr.lblVentePacket;
+    }
+  </script>
+
+</body>
+</html>
